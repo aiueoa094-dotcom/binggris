@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pembelajaran Bahasa Inggris</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1400px;
+            z-index: 10;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 180px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4, #ffecd2, #fcb69f, #ff9a9e);
+            background-size: 200% 100%;
+            animation: colorMorphing 5s ease infinite;
+        }
+
+        @keyframes colorMorphing {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .card-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .card-category {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+        }
+
+        .card-link {
+            color: white;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
+        }
+
+        .card-link i {
+            margin-left: 5px;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes" id="floatingShapes"></div>
+    
+    <div class="header">
+        <h1>Dashboard Pembelajaran Bahasa Inggris</h1>
+        <p>Koleksi sumber daya terbaik untuk meningkatkan kemampuan bahasa Inggris Anda</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Cari sumber belajar...">
+    </div>
+
+    <div class="categories" id="categories">
+        <button class="category-btn active" data-category="all">Semua</button>
+        <button class="category-btn" data-category="general">Umum</button>
+        <button class="category-btn" data-category="grammar">Grammar</button>
+        <button class="category-btn" data-category="listening">Listening</button>
+        <button class="category-btn" data-category="speaking">Speaking</button>
+        <button class="category-btn" data-category="reading">Reading</button>
+        <button class="category-btn" data-category="vocabulary">Vocabulary</button>
+        <button class="category-btn" data-category="exam">Persiapan Ujian</button>
+        <button class="category-btn" data-category="tutor">Tutor Bahasa</button>
+        <button class="category-btn" data-category="exchange">Pertukaran Bahasa</button>
+    </div>
+
+    <div class="dashboard" id="dashboard"></div>
+
+    <script>
+        // Data website pembelajaran bahasa Inggris
+        const websites = [
+            {
+                name: "Duolingo",
+                url: "https://www.duolingo.com/",
+                description: "Pelajaran singkat & gamified, cocok untuk pemula",
+                category: "general",
+                icon: "fa-language"
+            },
+            {
+                name: "British Council - LearnEnglish",
+                url: "https://learnenglish.britishcouncil.org/",
+                description: "High-quality free resources from the world's English teaching experts",
+                category: "general",
+                icon: "fa-graduation-cap"
+            },
+            {
+                name: "BBC Learning English",
+                url: "https://www.bbc.co.uk/learningenglish/",
+                description: "Learn English with the BBC - video & podcast, fokus British English",
+                category: "general",
+                icon: "fa-podcast"
+            },
+            {
+                name: "Cambridge English",
+                url: "https://www.cambridgeenglish.org/learning-english/",
+                description: "Materi & persiapan ujian dari Cambridge",
+                category: "exam",
+                icon: "fa-university"
+            },
+            {
+                name: "FluentU",
+                url: "https://www.fluentu.com/english/",
+                description: "Learn English online with authentic videos",
+                category: "listening",
+                icon: "fa-video"
+            },
+            {
+                name: "Memrise",
+                url: "https://www.memrise.com/",
+                description: "Belajar kosakata dengan flashcards & mnemonic",
+                category: "vocabulary",
+                icon: "fa-brain"
+            },
+            {
+                name: "Babbel",
+                url: "https://www.babbel.com/",
+                description: "Pelajaran berbayar terstruktur untuk percakapan praktis",
+                category: "speaking",
+                icon: "fa-comments"
+            },
+            {
+                name: "Busuu",
+                url: "https://www.busuu.com/",
+                description: "Kursus terstruktur + koreksi native speaker",
+                category: "general",
+                icon: "fa-book-open"
+            },
+            {
+                name: "Lingoda",
+                url: "https://www.lingoda.com/",
+                description: "Kelas live dengan guru asli (terjadwal & intensif)",
+                category: "tutor",
+                icon: "fa-chalkboard-teacher"
+            },
+            {
+                name: "Coursera",
+                url: "https://www.coursera.org/",
+                description: "Kursus universitas (Academic/Business English & skill khusus)",
+                category: "general",
+                icon: "fa-university"
+            },
+            {
+                name: "edX",
+                url: "https://www.edx.org/",
+                description: "Kursus akademik & persiapan bahasa dari universitas",
+                category: "general",
+                icon: "fa-university"
+            },
+            {
+                name: "Udemy",
+                url: "https://www.udemy.com/",
+                description: "Banyak kursus topik-spesifik (pronunciation, grammar, business)",
+                category: "general",
+                icon: "fa-laptop-code"
+            },
+            {
+                name: "VOA Learning English",
+                url: "https://learningenglish.voanews.com/",
+                description: "Berita & pelajaran bahasa Inggris pelan untuk pelajar",
+                category: "listening",
+                icon: "fa-newspaper"
+            },
+            {
+                name: "EngVid",
+                url: "https://www.engvid.com/",
+                description: "Ratusan video gratis oleh pengajar ESL untuk grammar & vocabulary",
+                category: "grammar",
+                icon: "fa-play-circle"
+            },
+            {
+                name: "Rachel's English",
+                url: "https://rachelsenglish.com/",
+                description: "Fokus pengucapan American English dan linking",
+                category: "speaking",
+                icon: "fa-microphone"
+            },
+            {
+                name: "EnglishClass101",
+                url: "https://www.englishclass101.com/",
+                description: "Audio & video lesson bertingkat",
+                category: "general",
+                icon: "fa-headphones"
+            },
+            {
+                name: "ESL Lab",
+                url: "https://www.esl-lab.com/",
+                description: "Latihan listening dengan kuis",
+                category: "listening",
+                icon: "fa-headphones-alt"
+            },
+            {
+                name: "Dave's ESL Cafe",
+                url: "https://www.eslcafe.com/",
+                description: "Forum komunitas guru & pelajar, job board, resources",
+                category: "general",
+                icon: "fa-coffee"
+            },
+            {
+                name: "Breaking News English",
+                url: "https://breakingnewsenglish.com/",
+                description: "Artikel berita berlevel + latihan vocabulary & listening",
+                category: "reading",
+                icon: "fa-newspaper"
+            },
+            {
+                name: "OneStopEnglish",
+                url: "https://www.onestopenglish.com/",
+                description: "Sumber untuk guru & materi pembelajaran terpaket",
+                category: "general",
+                icon: "fa-book"
+            },
+            {
+                name: "EnglishClub",
+                url: "https://www.englishclub.com/",
+                description: "Belajar grammar, vocab, listening, forum belajar",
+                category: "general",
+                icon: "fa-users"
+            },
+            {
+                name: "UsingEnglish.com",
+                url: "https://www.usingenglish.com/",
+                description: "Referensi grammar & forum penutur",
+                category: "grammar",
+                icon: "fa-book-reader"
+            },
+            {
+                name: "Perfect English Grammar",
+                url: "https://www.perfect-english-grammar.com/",
+                description: "Latihan terfokus pada tenses & grammar",
+                category: "grammar",
+                icon: "fa-check-circle"
+            },
+            {
+                name: "Grammarly",
+                url: "https://www.grammarly.com/blog/",
+                description: "Tips menulis & tata bahasa praktis",
+                category: "grammar",
+                icon: "fa-pen"
+            },
+            {
+                name: "Oxford Online English",
+                url: "https://www.oxfordonlineenglish.com/",
+                description: "Pelajaran video & privat, fokus praktis",
+                category: "tutor",
+                icon: "fa-video"
+            },
+            {
+                name: "IELTS Official",
+                url: "https://www.ielts.org/",
+                description: "Sumber persiapan ujian IELTS (materi & contoh)",
+                category: "exam",
+                icon: "fa-certificate"
+            },
+            {
+                name: "TOEFL",
+                url: "https://www.ets.org/toefl",
+                description: "Situs resmi TOEFL — materi & simulasi ujian",
+                category: "exam",
+                icon: "fa-certificate"
+            },
+            {
+                name: "Phrasemix",
+                url: "https://www.phrasemix.com/",
+                description: "Belajar frasa idiomatik & ungkapan nyata",
+                category: "vocabulary",
+                icon: "fa-quote-right"
+            },
+            {
+                name: "LyricsTraining",
+                url: "https://lyricstraining.com/",
+                description: "Belajar listening lewat lagu & lirik interaktif",
+                category: "listening",
+                icon: "fa-music"
+            },
+            {
+                name: "Elllo.org",
+                url: "https://www.elllo.org/",
+                description: "Audio & video listening dari penutur dunia",
+                category: "listening",
+                icon: "fa-globe"
+            },
+            {
+                name: "English Central",
+                url: "https://www.englishcentral.com/",
+                description: "Video + speech recognition untuk latihan pronunciation",
+                category: "speaking",
+                icon: "fa-microphone-alt"
+            },
+            {
+                name: "Italki",
+                url: "https://www.italki.com/",
+                description: "Marketplace tutor bahasa (les privat via video)",
+                category: "tutor",
+                icon: "fa-chalkboard-teacher"
+            },
+            {
+                name: "Preply",
+                url: "https://preply.com/",
+                description: "Cari tutor privat untuk percakapan & persiapan ujian",
+                category: "tutor",
+                icon: "fa-user-tie"
+            },
+            {
+                name: "Verbling",
+                url: "https://www.verbling.com/",
+                description: "Platform les bahasa dengan guru native",
+                category: "tutor",
+                icon: "fa-chalkboard"
+            },
+            {
+                name: "HelloTalk",
+                url: "https://www.hellotalk.com/",
+                description: "Tandem language exchange via chat & voice",
+                category: "exchange",
+                icon: "fa-comments"
+            },
+            {
+                name: "Tandem",
+                url: "https://www.tandem.net/",
+                description: "Partner pertukaran bahasa dengan penutur asli",
+                category: "exchange",
+                icon: "fa-people-arrows"
+            },
+            {
+                name: "ConversationExchange",
+                url: "https://www.conversationexchange.com/",
+                description: "Cari partner tukar bicara (online/offline)",
+                category: "exchange",
+                icon: "fa-exchange-alt"
+            },
+            {
+                name: "Quizlet",
+                url: "https://quizlet.com/",
+                description: "Flashcards & latihan kosakata interaktif",
+                category: "vocabulary",
+                icon: "fa-layer-group"
+            },
+            {
+                name: "Anki",
+                url: "https://apps.ankiweb.net/",
+                description: "SRS flashcard untuk menghafal kosakata jangka panjang",
+                category: "vocabulary",
+                icon: "fa-brain"
+            },
+            {
+                name: "Simple English Wikipedia",
+                url: "https://simple.wikipedia.org/",
+                description: "Bacaan berbahasa Inggris sederhana untuk latihan reading",
+                category: "reading",
+                icon: "fa-book-open"
+            },
+            {
+                name: "Khan Academy",
+                url: "https://www.khanacademy.org/",
+                description: "Materi grammar & reading comprehension (gratis)",
+                category: "grammar",
+                icon: "fa-graduation-cap"
+            },
+            {
+                name: "TED-Ed / TED Talks",
+                url: "https://ed.ted.com/",
+                description: "Video pendek inspiratif untuk listening & vocabulary",
+                category: "listening",
+                icon: "fa-lightbulb"
+            },
+            {
+                name: "Cambridge Dictionary",
+                url: "https://dictionary.cambridge.org/",
+                description: "Definisi & contoh kalimat untuk pelajar",
+                category: "vocabulary",
+                icon: "fa-book"
+            },
+            {
+                name: "Merriam-Webster Learner's Dictionary",
+                url: "https://www.learnersdictionary.com/",
+                description: "Kamus bergaya pelajar + games",
+                category: "vocabulary",
+                icon: "fa-spell-check"
+            },
+            {
+                name: "Vocabulary.com",
+                url: "https://www.vocabulary.com/",
+                description: "Latihan kosa kata & definisi kontekstual",
+                category: "vocabulary",
+                icon: "fa-font"
+            },
+            {
+                name: "WordReference",
+                url: "https://www.wordreference.com/",
+                description: "Kamus + forum tanya arti & penggunaan kata",
+                category: "vocabulary",
+                icon: "fa-language"
+            },
+            {
+                name: "TalkEnglish",
+                url: "https://www.talkenglish.com/",
+                description: "Materi speaking & dialog siap pakai",
+                category: "speaking",
+                icon: "fa-comments"
+            },
+            {
+                name: "English Page",
+                url: "https://www.englishpage.com/",
+                description: "Latihan grammar lanjutan & phrasal verbs",
+                category: "grammar",
+                icon: "fa-file-alt"
+            },
+            {
+                name: "Learn American English Online",
+                url: "https://www.learnamericanenglishonline.com/",
+                description: "Skema warna untuk grammar & level",
+                category: "general",
+                icon: "fa-flag-usa"
+            },
+            {
+                name: "British Council: LearnEnglish Kids",
+                url: "https://learnenglishkids.britishcouncil.org/",
+                description: "Sumber anak & remaja: games, songs",
+                category: "general",
+                icon: "fa-child"
+            },
+            {
+                name: "Write & Improve",
+                url: "https://writeandimprove.com/",
+                description: "Latihan menulis + feedback otomatis",
+                category: "grammar",
+                icon: "fa-pen-fancy"
+            },
+            {
+                name: "Englishforums.com",
+                url: "https://www.englishforums.com/",
+                description: "Forum diskusi & koreksi tulisan antar pelajar",
+                category: "general",
+                icon: "fa-comments"
+            },
+            {
+                name: "OpenLearn",
+                url: "https://www.open.edu/openlearn/",
+                description: "Kursus gratis termasuk English & communication",
+                category: "general",
+                icon: "fa-university"
+            },
+            {
+                name: "FutureLearn",
+                url: "https://www.futurelearn.com/",
+                description: "Kursus singkat dari institusi Inggris",
+                category: "general",
+                icon: "fa-certificate"
+            },
+            {
+                name: "ELL Stack Exchange",
+                url: "https://ell.stackexchange.com/",
+                description: "Komunitas tanya-jawab untuk pelajar bahasa Inggris",
+                category: "general",
+                icon: "fa-stack-exchange"
+            },
+            {
+                name: "Google's Digital Garage",
+                url: "https://learndigital.withgoogle.com/digitalgarage",
+                description: "Materi English bisnis / digital skills",
+                category: "general",
+                icon: "fa-google"
+            }
+        ];
+
+        // Inisialisasi variabel
+        let activeCategory = 'all';
+        let searchTerm = '';
+
+        // Fungsi untuk membuat bentuk mengambang
+        function createFloatingShapes() {
+            const container = document.getElementById('floatingShapes');
+            const shapeCount = 15;
+            
+            for (let i = 0; i < shapeCount; i++) {
+                const shape = document.createElement('div');
+                shape.classList.add('shape');
+                
+                // Ukuran acak
+                const size = Math.random() * 100 + 50;
+                shape.style.width = `${size}px`;
+                shape.style.height = `${size}px`;
+                
+                // Posisi acak
+                shape.style.left = `${Math.random() * 100}%`;
+                shape.style.top = `${Math.random() * 100}%`;
+                
+                // Delay animasi acak
+                shape.style.animationDelay = `${Math.random() * 5}s`;
+                shape.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                
+                container.appendChild(shape);
+            }
+        }
+
+        // Fungsi untuk membuat kartu website
+        function createCard(website) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.category = website.category;
+            
+            card.innerHTML = `
+                <div class="card-content">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas ${website.icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">${website.name}</h3>
+                        </div>
+                    </div>
+                    <p class="card-description">${website.description}</p>
+                    <div class="card-footer">
+                        <span class="card-category">${getCategoryName(website.category)}</span>
+                        <a href="${website.url}" target="_blank" class="card-link">
+                            Kunjungi <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            // Tambahkan event listener untuk membuka link saat kartu diklik
+            card.addEventListener('click', function(e) {
+                // Jika yang diklik bukan link, buka link utama
+                if (!e.target.classList.contains('card-link') && !e.target.closest('.card-link')) {
+                    window.open(website.url, '_blank');
+                }
+            });
+            
+            return card;
+        }
+
+        // Fungsi untuk mendapatkan nama kategori yang lebih mudah dibaca
+        function getCategoryName(category) {
+            const categoryNames = {
+                'general': 'Umum',
+                'grammar': 'Grammar',
+                'listening': 'Listening',
+                'speaking': 'Speaking',
+                'reading': 'Reading',
+                'vocabulary': 'Vocabulary',
+                'exam': 'Persiapan Ujian',
+                'tutor': 'Tutor Bahasa',
+                'exchange': 'Pertukaran Bahasa'
+            };
+            
+            return categoryNames[category] || category;
+        }
+
+        // Fungsi untuk menampilkan kartu
+        function displayCards() {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.innerHTML = '';
+            
+            // Filter berdasarkan kategori dan pencarian
+            let filteredWebsites = websites.filter(website => {
+                const matchesCategory = activeCategory === 'all' || website.category === activeCategory;
+                const matchesSearch = website.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                     website.description.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                return matchesCategory && matchesSearch;
+            });
+            
+            if (filteredWebsites.length === 0) {
+                dashboard.innerHTML = '<div class="no-results">Tidak ada hasil yang ditemukan. Coba kata kunci lain.</div>';
+                return;
+            }
+            
+            filteredWebsites.forEach(website => {
+                const card = createCard(website);
+                dashboard.appendChild(card);
+            });
+        }
+
+        // Fungsi untuk menangani klik pada tombol kategori
+        function handleCategoryClick() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Hapus kelas aktif dari semua tombol
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Tambahkan kelas aktif ke tombol yang diklik
+                    this.classList.add('active');
+                    
+                    // Update kategori aktif
+                    activeCategory = this.dataset.category;
+                    
+                    // Tampilkan kartu yang sesuai
+                    displayCards();
+                });
+            });
+        }
+
+        // Fungsi untuk menangani pencarian
+        function handleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', function() {
+                searchTerm = this.value;
+                displayCards();
+            });
+        }
+
+        // Inisialisasi halaman
+        function init() {
+            createFloatingShapes();
+            displayCards();
+            handleCategoryClick();
+            handleSearch();
+        }
+
+        // Jalankan inisialisasi saat DOM dimuat
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
